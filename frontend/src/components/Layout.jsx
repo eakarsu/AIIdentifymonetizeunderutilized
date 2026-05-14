@@ -31,6 +31,13 @@ export default function Layout({ user, onLogout, children }) {
               <span className="nav-icon">📊</span>
               Dashboard
             </button>
+            <button
+              className={`nav-item ${location.pathname === '/advanced-ai' ? 'active' : ''}`}
+              onClick={() => navigate('/advanced-ai')}
+            >
+              <span className="nav-icon">🤖</span>
+              Advanced AI
+            </button>
           </div>
 
           {sections.map((section) => (
