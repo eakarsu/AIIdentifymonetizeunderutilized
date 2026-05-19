@@ -44,6 +44,9 @@ app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/agentic-utilization-scout', require('./routes/agenticUtilizationScout'));
 app.use('/api/dr-monetize', require('./routes/demandResponseMonetize'));
 
+// Custom Views — Identify / Monetize Underutilized Assets (mounted BEFORE 404 fallback)
+app.use('/api/custom-views', require('./routes/customViews'));
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

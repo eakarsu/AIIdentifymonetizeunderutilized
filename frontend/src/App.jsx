@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import FeaturePage from './pages/FeaturePage';
 import AdvancedAITools from './pages/AdvancedAITools';
+import CustomViewsPage from './pages/CustomViewsPage';
 import Layout from './components/Layout';
 
 // === Batch 04 Gaps & Frontend Mounts ===
@@ -69,6 +70,10 @@ export default function App() {
         <Route
           path="/advanced-ai"
           element={user ? <Layout user={user} onLogout={handleLogout}><AdvancedAITools /></Layout> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/custom-views"
+          element={user ? <Layout user={user} onLogout={handleLogout}><CustomViewsPage /></Layout> : <Navigate to="/login" />}
         />
       
           {/* // === Batch 04 Gaps & Frontend Mounts === */}

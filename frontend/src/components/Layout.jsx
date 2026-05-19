@@ -38,6 +38,13 @@ export default function Layout({ user, onLogout, children }) {
               <span className="nav-icon">🤖</span>
               Advanced AI
             </button>
+            <button
+              className={`nav-item ${location.pathname === '/custom-views' ? 'active' : ''}`}
+              onClick={() => navigate('/custom-views')}
+            >
+              <span className="nav-icon">💰</span>
+              Monetize Views
+            </button>
           </div>
 
           {sections.map((section) => (
