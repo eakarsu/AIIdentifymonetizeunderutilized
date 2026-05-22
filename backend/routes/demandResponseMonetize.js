@@ -2,7 +2,7 @@
 // Audit: batch_04.md / AIIdentifymonetizeunderutilized / Custom Feature Suggestions #5
 // TODO: configure credentials UTILITY_API_KEY, GRID_OPERATOR_API_KEY
 const express = require('express');
-const auth = require('../middleware/auth');
+const { authenticateToken: auth } = require('../middleware/auth');
 const { queryAI } = require('../openrouter');
 const pool = require('../db');
 

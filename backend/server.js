@@ -43,6 +43,7 @@ app.use('/api/integrations', require('./routes/integrations'));
 app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/agentic-utilization-scout', require('./routes/agenticUtilizationScout'));
 app.use('/api/dr-monetize', require('./routes/demandResponseMonetize'));
+app.use('/api/tenant-revenue-share-simulator', require('./routes/tenantRevenueShareSimulator'));
 
 // Custom Views — Identify / Monetize Underutilized Assets (mounted BEFORE 404 fallback)
 app.use('/api/custom-views', require('./routes/customViews'));

@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import FeaturePage from './pages/FeaturePage';
 import AdvancedAITools from './pages/AdvancedAITools';
 import CustomViewsPage from './pages/CustomViewsPage';
+import TenantRevenueShareSimulator from './pages/TenantRevenueShareSimulator';
 import Layout from './components/Layout';
 
 // === Batch 04 Gaps & Frontend Mounts ===
@@ -24,6 +25,11 @@ import GapNoFileUploadForComplianceDocumentat from './pages/GapNoFileUploadForCo
 import GapNoWebhookSurfaceForUtilityMeter from './pages/GapNoWebhookSurfaceForUtilityMeter';
 import GapNoRealTimeGridStabilityStreaming from './pages/GapNoRealTimeGridStabilityStreaming';
 import GapNoPublicMarketplaceForSharingOffere from './pages/GapNoPublicMarketplaceForSharingOffere';
+
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
+
+import TimelineView from './pages/TimelineView';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -55,6 +61,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/insights/timeline" element={<TimelineView />} />
+        <Route path="/codex/custom-viz" element={<CodexCustomVizFeature />} />
+        <Route path="/codex/operations" element={<CodexOperationsFeature />} />
+
         <Route
           path="/login"
           element={user ? <Navigate to="/" /> : <Login onLogin={handleLogin} />}
@@ -74,6 +84,10 @@ export default function App() {
         <Route
           path="/custom-views"
           element={user ? <Layout user={user} onLogout={handleLogout}><CustomViewsPage /></Layout> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/tenant-revenue-share-simulator"
+          element={user ? <Layout user={user} onLogout={handleLogout}><TenantRevenueShareSimulator /></Layout> : <Navigate to="/login" />}
         />
       
           {/* // === Batch 04 Gaps & Frontend Mounts === */}

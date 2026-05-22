@@ -2,12 +2,12 @@
 // monetization opportunities.
 // Audit: batch_04.md / AIIdentifymonetizeunderutilized / Custom Feature Suggestions #1
 const express = require('express');
-const auth = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 const { queryAI } = require('../openrouter');
 const pool = require('../db');
 
 const router = express.Router();
-router.use(auth);
+router.use(authenticateToken);
 
 function parseJSON(t) { try { const m = t.match(/\{[\s\S]*\}/); if (m) return JSON.parse(m[0]); } catch (_) {} return { notes: t }; }
 
