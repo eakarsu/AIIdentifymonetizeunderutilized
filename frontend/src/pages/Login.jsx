@@ -7,12 +7,6 @@ export default function Login({ onLogin }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleAutoFill = () => {
-    setEmail('admin@energygrid.com');
-    setPassword('admin123');
-    setError('');
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -35,10 +29,6 @@ export default function Login({ onLogin }) {
           <h1>EnergyGrid Pro</h1>
           <p>Grid Stability & Social Equity Platform</p>
         </div>
-
-        <button className="btn btn-autofill" type="button" onClick={handleAutoFill}>
-          Click to Auto-Fill Demo Credentials
-        </button>
 
         {error && <div className="error-msg">{error}</div>}
 

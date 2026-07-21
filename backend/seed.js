@@ -2,16 +2,15 @@ const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+const required = (name) => { const value = process.env[name]; if (!value) throw new Error(`${name} is required`); return value; };
 
 const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME || 'energy_grid_db',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
+  host: required('DB_HOST'), port: Number(required('DB_PORT')), database: required('DB_NAME'), user: required('DB_USER'), password: required('DB_PASSWORD'),
 });
 
 async function seed() {
+  if (process.env.ALLOW_DESTRUCTIVE_DEMO_SEED !== 'true' || process.env.NODE_ENV === 'production') throw new Error('destructive demo seed is disabled');
+  if (!process.env.DEMO_ADMIN_PASSWORD) throw new Error('DEMO_ADMIN_PASSWORD is required for demo seeding');
   console.log('🌱 Starting database seed...');
 
   // Drop and recreate tables
@@ -281,7 +280,7 @@ async function seed() {
   console.log('✅ Tables created');
 
   // Seed users
-  const passwordHash = await bcrypt.hash('admin123', 10);
+  const passwordHash = await bcrypt.hash(process.env.DEMO_ADMIN_PASSWORD, 10);
   await pool.query(`
     INSERT INTO users (name, email, password_hash, role) VALUES
     ('Admin User', 'admin@energygrid.com', '${passwordHash}', 'admin'),
