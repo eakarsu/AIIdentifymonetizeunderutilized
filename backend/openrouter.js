@@ -4,19 +4,15 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || 'anthropic/claude-haiku-4.5';
+const OPENROUTER_BASE_URL = (process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1').replace(/\/$/, '');
 
 async function queryAI(systemPrompt, userPrompt) {
   if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY === 'your_openrouter_api_key_here') {
-    return {
-      success: false,
-      error: 'OpenRouter API key not configured. Please set OPENROUTER_API_KEY in .env file.',
-      fallback: true,
-      content: generateFallbackResponse(systemPrompt, userPrompt)
-    };
+    throw new Error('OPENROUTER_API_KEY not configured');
   }
 
   try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
@@ -37,29 +33,17 @@ async function queryAI(systemPrompt, userPrompt) {
 
     const data = await response.json();
 
-    if (data.error) {
-      return {
-        success: false,
-        error: data.error.message || 'OpenRouter API error',
-        fallback: true,
-        content: generateFallbackResponse(systemPrompt, userPrompt)
-      };
-    }
+    if (!response.ok || data.error) throw new Error(data.error?.message || `OpenRouter request failed with HTTP ${response.status}`);
+    const content = data.choices?.[0]?.message?.content;
+    if (!content || !String(content).trim()) throw new Error('OpenRouter returned empty content');
 
     return {
       success: true,
-      content: data.choices[0].message.content,
+      content,
       model: data.model,
       usage: data.usage
     };
-  } catch (error) {
-    return {
-      success: false,
-      error: error.message,
-      fallback: true,
-      content: generateFallbackResponse(systemPrompt, userPrompt)
-    };
-  }
+  } catch (error) { throw error; }
 }
 
 function generateFallbackResponse(systemPrompt, userPrompt) {
