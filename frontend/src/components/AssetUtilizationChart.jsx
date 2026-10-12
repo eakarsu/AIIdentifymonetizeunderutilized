@@ -10,7 +10,7 @@ export default function AssetUtilizationChart() {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.json())
-      .then(setData)
+      .then(payload => setData({ ...payload, assets: Array.isArray(payload?.assets) ? payload.assets : [] }))
       .catch(e => setErr(e.message));
   }, []);
 

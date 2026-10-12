@@ -66,6 +66,14 @@ app.use('/api/gap-no-webhook-surface-for-utility-meter', route_gap_no_webhook_su
 app.use('/api/gap-no-real-time-grid-stability-streaming', route_gap_no_real_time_grid_stability_streaming);
 app.use('/api/gap-no-public-marketplace-for-sharing-offere', route_gap_no_public_marketplace_for_sharing_offere);
 
+
+// Advisory AI reports only; native execution and approval routes stay unchanged.
+const aiWorkspaceSupport = require("./aiWorkspaceAdapters.cjs");
+const aiWorkspaceDatabase = require("./db.js");
+app.use('/api/report-workspace', require("./aiWorkspace.cjs").createAIWorkspaceRouter({
+  pool: aiWorkspaceDatabase, authenticateToken: require("./middleware/auth.js").authenticateToken,
+  aiRateLimiter: aiWorkspaceSupport.createWorkspaceLimiter(), features: require("./aiWorkspaceFeatures.json"),
+}));
 app.listen(PORT, () => {
   console.log(`⚡ Energy Grid Backend running on port ${PORT}`);
 });

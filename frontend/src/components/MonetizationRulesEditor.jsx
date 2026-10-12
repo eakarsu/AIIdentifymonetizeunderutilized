@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { collectionItems } from '../services/api';
 
 const empty = {
   asset_category: '',
@@ -24,7 +25,7 @@ export default function MonetizationRulesEditor() {
   const load = () =>
     fetch('/api/custom-views/rules', { headers: { Authorization: `Bearer ${token()}` } })
       .then(r => r.json())
-      .then(setRules)
+      .then(payload => setRules(collectionItems(payload)))
       .catch(e => setErr(e.message));
 
   useEffect(() => { load(); }, []);

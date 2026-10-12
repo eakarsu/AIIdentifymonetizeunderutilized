@@ -1,5 +1,16 @@
 const API_BASE = '/api';
 
+// Collection endpoints may return a bare array or a paginated envelope.
+export function collectionItems(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (payload && typeof payload === 'object') {
+    for (const key of ['items', 'data', 'results', 'rows']) {
+      if (Array.isArray(payload[key])) return payload[key];
+    }
+  }
+  return [];
+}
+
 function getHeaders() {
   const token = localStorage.getItem('token');
   return {
@@ -33,7 +44,7 @@ export const api = {
   me: () => request('/auth/me'),
 
   // Generic CRUD
-  getAll: (resource) => request(`/${resource}`),
+  getAll: async (resource) => collectionItems(await request(`/${resource}`)),
   getOne: (resource, id) => request(`/${resource}/${id}`),
   create: (resource, data) =>
     request(`/${resource}`, {

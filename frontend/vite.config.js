@@ -8,7 +8,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': {
-        target: process.env.BACKEND_PROXY_TARGET || 'http://localhost:3001',
+        target: process.env.BACKEND_PROXY_TARGET || `http://127.0.0.1:${process.env.BACKEND_PORT || process.env.PORT || 3001}`,
         changeOrigin: true,
       },
     },

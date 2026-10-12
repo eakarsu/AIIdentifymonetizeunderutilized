@@ -1,3 +1,6 @@
+import NativeAIControls from "../components/NativeAIControls";
+import useNativeAIRequest from "../components/useNativeAIRequest";
+import FormattedAIReport from "../components/FormattedAIReport";
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 
@@ -68,16 +71,16 @@ const TOOLS = [
   },
 ];
 
-function postAI(endpoint, body) {
+function postAI(endpoint, body, nativeRequestOptions = {}) {
   const token = localStorage.getItem('token');
-  return fetch(`/api${endpoint}`, {
+  return fetch(`/api${endpoint}`, { ...({
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(body || {}),
-  }).then(async (res) => {
+  }), ...(nativeRequestOptions) }).then(async (res) => {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || data.message || `Request failed (${res.status})`);
     return data;
@@ -85,6 +88,8 @@ function postAI(endpoint, body) {
 }
 
 export default function AdvancedAITools() {
+  const nativeAIRequest = useNativeAIRequest();
+
   const [tab, setTab] = useState(TOOLS[0].id);
   const [forms, setForms] = useState({});
   const [buildings, setBuildings] = useState([]);
@@ -116,7 +121,7 @@ export default function AdvancedAITools() {
         if (f.type === 'number' || f.type === 'building') body[f.name] = Number(v);
         else body[f.name] = v;
       });
-      const data = await postAI(tool.endpoint, body);
+      const data = await nativeAIRequest.run((signal) => postAI(tool.endpoint, body, { signal }));
       setResult(data);
     } catch (err) {
       setError(err.message || 'Request failed');
@@ -131,7 +136,7 @@ export default function AdvancedAITools() {
   };
 
   return (
-    <div>
+    <NativeAIControls busy={nativeAIRequest.busy} onCancel={nativeAIRequest.cancel} context="Identifymonetizeunderutilized"><div>
       <div className="page-header">
         <div>
           <h2>🤖 Advanced AI Tools</h2>
@@ -168,7 +173,7 @@ export default function AdvancedAITools() {
             <div key={f.name} style={{ marginBottom: 14 }}>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{f.label}</label>
               {f.type === 'building' ? (
-                <select
+                <select data-ai-field={f.name}
                   value={formData[f.name] || ''}
                   onChange={(e) => setField(f.name, e.target.value)}
                   style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e7eb' }}
@@ -179,7 +184,7 @@ export default function AdvancedAITools() {
                   ))}
                 </select>
               ) : f.type === 'select' ? (
-                <select
+                <select data-ai-field={f.name}
                   value={formData[f.name] || ''}
                   onChange={(e) => setField(f.name, e.target.value)}
                   style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e7eb' }}
@@ -188,7 +193,7 @@ export default function AdvancedAITools() {
                   {f.options.map((o) => <option key={o} value={o}>{o}</option>)}
                 </select>
               ) : f.type === 'textarea' ? (
-                <textarea
+                <textarea data-ai-field={f.name}
                   rows={4}
                   value={formData[f.name] || ''}
                   placeholder={f.placeholder || ''}
@@ -196,7 +201,7 @@ export default function AdvancedAITools() {
                   style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e7eb', fontFamily: 'inherit' }}
                 />
               ) : (
-                <input
+                <input data-ai-field={f.name}
                   type={f.type || 'text'}
                   value={formData[f.name] || ''}
                   placeholder={f.placeholder || ''}
@@ -229,12 +234,10 @@ export default function AdvancedAITools() {
         {result && (
           <div style={{ marginTop: 16, padding: 18, background: '#f8fafc', borderRadius: 12, border: '1px solid #e2e8f0' }}>
             <h4 style={{ marginTop: 0 }}>Result</h4>
-            <pre style={{ background: '#0f172a', color: '#e2e8f0', padding: 14, borderRadius: 8, overflow: 'auto', fontSize: 12, maxHeight: 500 }}>
-              {JSON.stringify(result, null, 2)}
-            </pre>
+            <FormattedAIReport response={result} />
           </div>
         )}
       </div>
-    </div>
+    </div></NativeAIControls>
   );
 }

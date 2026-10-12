@@ -10,7 +10,7 @@ export default function RevenueOpportunityHeatmap() {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.json())
-      .then(setData)
+      .then(payload => setData({ ...payload, channels: Array.isArray(payload?.channels) ? payload.channels : [], assets: Array.isArray(payload?.assets) ? payload.assets : [], matrix: Array.isArray(payload?.matrix) ? payload.matrix : [] }))
       .catch(e => setErr(e.message));
   }, []);
 
@@ -43,7 +43,7 @@ export default function RevenueOpportunityHeatmap() {
             {data.assets.map((a, i) => (
               <tr key={a}>
                 <td style={{ padding: 6, fontWeight: 600 }}>{a}</td>
-                {data.matrix[i].map((v, j) => (
+                {(Array.isArray(data.matrix[i]) ? data.matrix[i] : []).map((v, j) => (
                   <td
                     key={j}
                     style={{

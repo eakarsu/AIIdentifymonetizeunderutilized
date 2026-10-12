@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../services/api';
 import { FEATURES } from '../config/features';
+import AIReport from '../components/AIReport';
 
 function formatValue(value, format) {
   if (value === null || value === undefined) return '—';
@@ -13,43 +14,6 @@ function formatValue(value, format) {
     return <span className={`status-badge ${cls}`}>{value}</span>;
   }
   return String(value);
-}
-
-function formatAIContent(content) {
-  if (!content) return null;
-  const sections = content.split(/(?=\d+[\.\)]\s)/).filter(Boolean);
-
-  if (sections.length > 1) {
-    return sections.map((section, i) => {
-      const lines = section.trim().split('\n');
-      const title = lines[0]?.replace(/^\d+[\.\)]\s*/, '').replace(/\*\*/g, '');
-      const body = lines.slice(1).join('\n').replace(/\*\*/g, '').replace(/[-•]\s/g, '').trim();
-      return (
-        <div className="ai-section" key={i}>
-          <h5>{title}</h5>
-          <p>{body || title}</p>
-        </div>
-      );
-    });
-  }
-
-  const paragraphs = content.split('\n\n').filter(Boolean);
-  if (paragraphs.length > 1) {
-    return paragraphs.map((p, i) => {
-      const cleaned = p.replace(/\*\*/g, '').trim();
-      if (cleaned.startsWith('-') || cleaned.startsWith('•')) {
-        const items = cleaned.split(/\n/).map(l => l.replace(/^[-•]\s*/, '').trim()).filter(Boolean);
-        return (
-          <div className="ai-section" key={i}>
-            {items.map((item, j) => <p key={j}>{item}</p>)}
-          </div>
-        );
-      }
-      return <div className="ai-section" key={i}><p>{cleaned}</p></div>;
-    });
-  }
-
-  return <div className="ai-section"><p>{content.replace(/\*\*/g, '')}</p></div>;
 }
 
 export default function FeaturePage() {
@@ -274,7 +238,7 @@ export default function FeaturePage() {
                   {aiResult.fallback && <span className="ai-model">Fallback Mode</span>}
                 </div>
                 <div className="ai-response-content">
-                  {formatAIContent(aiResult.content)}
+                  <AIReport response={aiResult} title={`${feature.title} analysis`} />
                 </div>
                 {aiResult.usage && (
                   <div style={{ marginTop: '12px', fontSize: '11px', color: 'var(--text-dim)', display: 'flex', gap: '16px' }}>
